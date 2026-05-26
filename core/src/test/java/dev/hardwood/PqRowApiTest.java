@@ -430,6 +430,33 @@ public class PqRowApiTest {
     }
 
     @Test
+    void pqListWrongElementTypeFailsOnElementDecode() throws Exception {
+        Path parquetFile = Paths.get("src/test/resources/typed_accessors_issue_445.parquet");
+
+        try (ParquetFileReader fileReader = ParquetFileReader.open(InputFile.of(parquetFile));
+             RowReader rowReader = fileReader.rowReader()) {
+            rowReader.next();
+            // `intervals` is a List<INTERVAL>; iterating it as dates fails on the
+            // first element decode rather than at iterator construction.
+            PqList intervals = rowReader.getList("intervals");
+            assertThatThrownBy(() -> intervals.dates().get(0))
+                    .isInstanceOf(ClassCastException.class);
+        }
+    }
+
+    @Test
+    void pqListTypedIteratorOnRightElementTypeStillWorks() throws Exception {
+        Path parquetFile = Paths.get("src/test/resources/typed_accessors_issue_445.parquet");
+
+        try (ParquetFileReader fileReader = ParquetFileReader.open(InputFile.of(parquetFile));
+             RowReader rowReader = fileReader.rowReader()) {
+            rowReader.next();
+            PqList intervals = rowReader.getList("intervals");
+            assertThat(intervals.intervals()).hasSize(2);
+        }
+    }
+
+    @Test
     void testDeepNestedStruct() throws Exception {
         Path parquetFile = Paths.get("src/test/resources/deep_nested_struct_test.parquet");
 

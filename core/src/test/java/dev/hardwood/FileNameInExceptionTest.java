@@ -62,6 +62,48 @@ class FileNameInExceptionTest {
         }
     }
 
+    // ==================== RowReader (multi-file) ====================
+
+    @Test
+    void multiFileRowReaderAttributesNullErrorsToTheirOwnFileName(@TempDir Path tempDir) throws Exception {
+        // `delta_binary_packed_optional_test.parquet` has 100 rows; `optional_value`
+        // is null on every third row (0-indexed positions 2, 5, 8, …). Copy the file
+        // under a second, distinct name so file-boundary detection in ColumnWorker is
+        // actually exercised, then read the same null offset from each copy: the NPE
+        // message must be attributed to the file the current row came from. This is
+        // the only multi-file RowReader path that surfaces file-prefixed errors —
+        // wrong-type access goes through a raw `ClassCastException` with no prefix.
+        Path firstFile = Paths.get("src/test/resources/delta_binary_packed_optional_test.parquet");
+        String firstFileName = "delta_binary_packed_optional_test.parquet";
+        Path secondFile = tempDir.resolve("second_file.parquet");
+        Files.copy(firstFile, secondFile);
+
+        try (Hardwood hardwood = Hardwood.create();
+             ParquetFileReader parquet = hardwood.openAll(
+                     InputFile.ofPaths(List.of(firstFile, secondFile)));
+             RowReader reader = parquet.rowReader()) {
+
+            // Advance to position 2 (first null row in the first file)
+            for (int i = 0; i < 3; i++) {
+                assertThat(reader.hasNext()).isTrue();
+                reader.next();
+            }
+            assertThatThrownBy(() -> reader.getInt("optional_value"))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("[" + firstFileName + "]");
+
+            // Advance through the rest of file 1 and to position 102 (first
+            // null row of file 2)
+            for (int i = 3; i < 103; i++) {
+                assertThat(reader.hasNext()).isTrue();
+                reader.next();
+            }
+            assertThatThrownBy(() -> reader.getInt("optional_value"))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("[second_file.parquet]");
+        }
+    }
+
     // ==================== ColumnReader (single file) ====================
 
     @Test
