@@ -3225,3 +3225,121 @@ pq.write_table(
 print("\nGenerated bloom_filter_test.parquet:")
 print("  - 1 row group, 64 rows, INT64 id + INT64 value")
 print("  - Bloom filter on 'id' only; 'value' has no bloom filter")
+
+# =====================================================================
+# Dive screenshots fixture (docs/content/assets/cli/*.svg)
+# Not a test corpus file: this realistic, wide, nested/list/map dataset
+# with multiple row groups and dictionary columns is the input the
+# `screenshots` Maven profile dives into when regenerating the docs
+# screenshots. See docs/screenshots/README.md.
+# =====================================================================
+
+dive_screenshots_schema = pa.schema([
+    ('id', pa.string(), False),
+    ('version', pa.int32(), False),
+    ('confidence', pa.float64(), True),
+    ('bbox', pa.struct([
+        ('xmin', pa.float64()),
+        ('xmax', pa.float64()),
+        ('ymin', pa.float64()),
+        ('ymax', pa.float64()),
+    ])),
+    ('names', pa.struct([
+        ('primary', pa.string()),
+        ('common', pa.map_(pa.string(), pa.string())),
+    ])),
+    ('sources', pa.list_(pa.struct([
+        ('dataset', pa.string()),
+        ('record_id', pa.string()),
+        ('license', pa.string()),
+    ]))),
+    ('addresses', pa.list_(pa.struct([
+        ('freeform', pa.string()),
+        ('locality', pa.string()),
+        ('region', pa.string()),
+        ('country', pa.string()),
+    ]))),
+    ('websites', pa.list_(pa.string())),
+    ('category', pa.string(), False),
+    ('status', pa.string(), False),
+    ('city', pa.string(), True),
+    ('country_code', pa.string(), True),
+    ('metric_a', pa.int64(), False),
+    ('metric_b', pa.int64(), False),
+    ('metric_c', pa.int64(), False),
+    ('metric_d', pa.int64(), False),
+    ('metric_e', pa.int64(), False),
+    ('metric_f', pa.int64(), False),
+    ('metric_g', pa.int64(), False),
+    ('metric_h', pa.int64(), False),
+])
+
+
+def _build_dive_screenshots_chunk(start, count):
+    rows = []
+    categories = ['restaurant', 'cafe', 'grocery', 'pharmacy', 'hotel', 'museum']
+    statuses = ['active', 'active', 'active', 'inactive']
+    cities = ['New York', 'Boston', 'Chicago', 'Austin', 'Seattle', 'Denver']
+
+    for i in range(start, start + count):
+        cat = categories[i % len(categories)]
+        rows.append({
+            'id': f'place-{i:06d}',
+            'version': 1000 + i,
+            'confidence': round(0.35 + ((i % 60) / 100.0), 2),
+            'bbox': {
+                'xmin': -123.0 + (i % 50) * 0.01,
+                'xmax': -122.5 + (i % 50) * 0.01,
+                'ymin': 37.0 + (i % 50) * 0.005,
+                'ymax': 37.4 + (i % 50) * 0.005,
+            },
+            'names': {
+                'primary': f'{cat.title()} #{i}',
+                'common': {
+                    'en': f'{cat.title()} {i}',
+                    'es': f'{cat.title()} {i} ES',
+                },
+            },
+            'sources': [
+                {'dataset': 'synthetic', 'record_id': f'syn-{i}', 'license': 'CC-BY'},
+                {'dataset': 'seed', 'record_id': f'seed-{i}', 'license': 'ODbL'},
+            ],
+            'addresses': [
+                {
+                    'freeform': f'{100 + (i % 900)} Main St',
+                    'locality': cities[i % len(cities)],
+                    'region': 'NA',
+                    'country': 'United States',
+                }
+            ],
+            'websites': [f'https://example.org/{cat}/{i}', f'https://m.example.org/{i}'],
+            'category': cat,
+            'status': statuses[i % len(statuses)],
+            'city': cities[i % len(cities)],
+            'country_code': 'US',
+            'metric_a': i * 3 + 1,
+            'metric_b': i * 3 + 2,
+            'metric_c': i * 3 + 3,
+            'metric_d': i * 3 + 4,
+            'metric_e': i * 3 + 5,
+            'metric_f': i * 3 + 6,
+            'metric_g': i * 3 + 7,
+            'metric_h': i * 3 + 8,
+        })
+    return pa.Table.from_pylist(rows, schema=dive_screenshots_schema)
+
+
+dive_screenshots_writer = pq.ParquetWriter(
+    'cli/src/test/resources/dive_screenshots_fixture.parquet',
+    schema=dive_screenshots_schema,
+    compression='zstd',
+    use_dictionary=['category', 'status', 'city', 'country_code', 'names.primary'],
+    data_page_version='1.0',
+)
+for dive_rg_start in (0, 150, 300, 450):
+    dive_screenshots_writer.write_table(_build_dive_screenshots_chunk(dive_rg_start, 150))
+dive_screenshots_writer.close()
+
+print("\nGenerated dive_screenshots_fixture.parquet (in cli):")
+print("  - 4 row groups, 600 rows, nested/list/map fields + dictionary columns")
+print("  - Wide metric_* tail columns for horizontal scrolling in data preview")

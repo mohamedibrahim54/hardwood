@@ -136,50 +136,54 @@ full vocabulary, but the keybar tells you which subset is live right
 now.
 
 Available screens:
-- Overview  
-  <a href="./img/screenshots/01-landing-overview.svg"><img src="./img/screenshots/01-landing-overview.svg" alt="Overview screen" width="320"></a>
-- Schema (expandable tree of groups + leaves)  
-  <a href="./img/screenshots/02-schema-tree.svg"><img src="./img/screenshots/02-schema-tree.svg" alt="Schema screen" width="320"></a>
-- Row groups   
-  <a href="./img/screenshots/03-1-rg.svg"><img src="./img/screenshots/03-1-rg.svg" alt="Row groups screen" width="320"></a>
-- Row group detail  
-  <a href="./img/screenshots/03-2-rg-detail.svg"><img src="./img/screenshots/03-2-rg-detail.svg" alt="Row groups screen" width="320"></a>
-- Column chunks   
-  <a href="./img/screenshots/03-3-rg-column-chunks.svg"><img src="./img/screenshots/03-3-rg-column-chunks.svg" alt="Row groups screen" width="320"></a>
-- Column chunk detail (facts + drill menu)   
-  <a href="./img/screenshots/03-4-rg-column-chunk-detail.svg"><img src="./img/screenshots/03-4-rg-column-chunk-detail.svg" alt="Row groups screen" width="320"></a>
-- Pages (with page-header modal on Enter)  
-  <a href="./img/screenshots/04-pages-header-modal.svg"><img src="./img/screenshots/04-pages-header-modal.svg" alt="Pages screen with page-header modal" width="320"></a>
-- Column index, Offset index, Footer & indexes (which also drills into a file-wide list of every chunk's column index, offset index, or dictionary region), Column-across-row-groups (from the Schema screen)   
-- Dictionary (full-value modal on Enter and `/` inline search)  
-  <a href="./img/screenshots/05-dict-search.svg"><img src="./img/screenshots/05-dict-search.svg" alt="Dictionary screen with inline search" width="320"></a>
-- Data preview (row values via `RowReader`; `←/→` scrolls visible columns; `PgDn/PgUp` flips pages)  
-  <a href="./img/screenshots/06-data-scrolled-right.svg"><img src="./img/screenshots/06-data-scrolled-right.svg" alt="Data preview screen scrolled right" width="320"></a>
 
-### Layout
+- **Overview**
+- **Schema** — expandable tree of groups and leaves
+- **Row groups**
+- **Row group detail**
+- **Column chunks**
+- **Column chunk detail** — facts pane plus drill menu
+- **Pages** — with a page-header modal on Enter
+- **Column index**
+- **Offset index**
+- **Footer & indexes** — also drills into a file-wide list of every chunk's column index, offset index, or dictionary region
+- **Column-across-row-groups** — from the Schema screen
+- **Dictionary** — full-value modal on Enter and `/` inline search
+- **Data preview** — row values via `RowReader`; `←/→` scrolls the visible column window, `PgDn/PgUp` flips pages
+
+A tour through the main screens (click any shot to open it full size):
+
+<figure markdown="span">[![Overview screen](/assets/cli/01-landing-overview.svg){ width="720" }](/assets/cli/01-landing-overview.svg)<figcaption>Overview</figcaption></figure>
+
+<figure markdown="span">[![Schema screen](/assets/cli/02-schema-tree.svg){ width="720" }](/assets/cli/02-schema-tree.svg)<figcaption>Schema — expandable tree of groups and leaves</figcaption></figure>
+
+<figure markdown="span">[![Row groups screen](/assets/cli/03-1-rg.svg){ width="720" }](/assets/cli/03-1-rg.svg)<figcaption>Row groups</figcaption></figure>
+
+<figure markdown="span">[![Row group detail screen](/assets/cli/03-2-rg-detail.svg){ width="720" }](/assets/cli/03-2-rg-detail.svg)<figcaption>Row group detail</figcaption></figure>
+
+<figure markdown="span">[![Column chunks screen](/assets/cli/03-3-rg-column-chunks.svg){ width="720" }](/assets/cli/03-3-rg-column-chunks.svg)<figcaption>Column chunks</figcaption></figure>
+
+<figure markdown="span">[![Column chunk detail screen](/assets/cli/03-4-rg-column-chunk-detail.svg){ width="720" }](/assets/cli/03-4-rg-column-chunk-detail.svg)<figcaption>Column chunk detail — facts pane plus drill menu</figcaption></figure>
+
+<figure markdown="span">[![Pages screen with page-header modal](/assets/cli/04-pages-header-modal.svg){ width="720" }](/assets/cli/04-pages-header-modal.svg)<figcaption>Pages — page-header modal on Enter</figcaption></figure>
+
+<figure markdown="span">[![Dictionary screen with inline search](/assets/cli/05-dict-search.svg){ width="720" }](/assets/cli/05-dict-search.svg)<figcaption>Dictionary — <code>/</code> inline search</figcaption></figure>
+
+<figure markdown="span">[![Data preview screen scrolled right](/assets/cli/06-data-scrolled-right.svg){ width="720" }](/assets/cli/06-data-scrolled-right.svg)<figcaption>Data preview — scrolled right across the column window</figcaption></figure>
 
 Every screen shares a four-region layout — a top bar with file identity, a
-breadcrumb showing the navigation stack, the active screen body, and a keybar:
-
-```
- hardwood dive │ /data/lineitem.parquet │ 1.4 GB │ 3 RGs │ 12.4 M rows
- Overview › Row groups › RG #1 › Column chunks › l_address.street
-┌────────────────────────────────────────────────────────────────────────┐
-│                                                                        │
-│                         (active screen body)                           │
-│                                                                        │
-└────────────────────────────────────────────────────────────────────────┘
- [↑↓] move  [Enter] drill  [Esc] back                [?] help   [q] quit
-```
+breadcrumb showing the navigation stack, the active screen body, and a keybar
+(all four visible in the Overview screenshot above).
 
 ### Typical drill path
 
 1. **Overview** → pick *Row groups* from the drill menu.
-2. **Row groups** → select a row, *Enter* — opens its column chunks.
-3. **Column chunks** → select a column, *Enter* — opens the chunk detail.
-4. **Column chunk detail** (facts pane + drill menu) → pick *Pages*, *Column
+2. **Row groups** → select a row, *Enter* — opens that row group's detail.
+3. **Row group detail** → *Enter* — opens its column chunks.
+4. **Column chunks** → select a column, *Enter* — opens the chunk detail.
+5. **Column chunk detail** (facts pane + drill menu) → pick *Pages*, *Column
    index*, *Offset index*, or *Dictionary*.
-5. Drill sub-screens (*Pages*, *Column index*, etc.) support *Esc* back up to
+6. Drill sub-screens (*Pages*, *Column index*, etc.) support *Esc* back up to
    the previous level; in *Pages* and *Dictionary*, *Enter* opens a modal with
    the full header / value.
 

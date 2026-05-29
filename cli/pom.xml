@@ -14,8 +14,7 @@
       <executable-suffix />
       <dist.qualifier>early-access</dist.qualifier>
       <screenshots.parquetFile>${maven.multiModuleProjectDirectory}/cli/src/test/resources/dive_screenshots_fixture.parquet</screenshots.parquetFile>
-      <screenshots.defaultParquetFile>${maven.multiModuleProjectDirectory}/cli/src/test/resources/dive_screenshots_fixture.parquet</screenshots.defaultParquetFile>
-      <screenshots.tapeFile>${maven.multiModuleProjectDirectory}/docs/content/img/screenshots/dive-screenshots.tape</screenshots.tapeFile>
+      <screenshots.tapeFile>${maven.multiModuleProjectDirectory}/docs/screenshots/dive-screenshots.tape</screenshots.tapeFile>
       <screenshots.castFile>${project.build.directory}/dive-screenshots.cast</screenshots.castFile>
       <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
       <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
