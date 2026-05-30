@@ -74,8 +74,9 @@ See the [Getting Started](https://hardwood.dev/latest/getting-started/) guide fo
 
 ## Talks & Posts
 
-- [Hardwood: A New Parser for Apache Parquet](https://www.morling.dev/blog/hardwood-new-parser-for-apache-parquet/) — project announcement
+- [Hardwood: A New Parser for Apache Parquet](https://www.morling.dev/blog/hardwood-new-parser-for-apache-parquet/) — Project announcement
 - [Open Source Friday with Gunnar Morling with Hardwood](https://www.youtube.com/watch?v=teqFSSQEtCw) — GitHub Open Source Friday
+- [Chasing Efficient Java Development: From 1BRC to Developing Hardwood AI Natively](https://www.infoq.com/podcasts/chasing-efficient-java-development/) - InfoQ Podcast on building Hardwood
 
 ---
 
