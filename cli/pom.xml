@@ -32,7 +32,7 @@
   <parent>
     <groupId>dev.hardwood</groupId>
     <artifactId>hardwood-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.CR1</version>
   </parent>
 
   <artifactId>hardwood-cli</artifactId>
@@ -45,7 +45,7 @@
     <connection>scm:git:git://github.com/hardwood-hq/hardwood.git</connection>
     <developerConnection>scm:git:git@github.com:hardwood-hq/hardwood.git</developerConnection>
     <url>https://github.com/hardwood-hq/hardwood/</url>
-    <tag>HEAD</tag>
+    <tag>v1.0.0.CR1</tag>
   </scm>
 
   <dependencyManagement>
@@ -646,28 +646,28 @@
               <exportAntProperties>true</exportAntProperties>
               <target>
                 <exec executable="git" outputproperty="gitRevision" errorproperty="gitRevisionErr" resultproperty="gitRevisionExit" failifexecutionfails="false" failonerror="false" dir="${maven.multiModuleProjectDirectory}">
-                  <arg value="rev-parse"/>
-                  <arg value="--short=7"/>
-                  <arg value="HEAD"/>
+                  <arg value="rev-parse" />
+                  <arg value="--short=7" />
+                  <arg value="HEAD" />
                 </exec>
                 <exec executable="git" outputproperty="gitStatus" errorproperty="gitStatusErr" resultproperty="gitStatusExit" failifexecutionfails="false" failonerror="false" dir="${maven.multiModuleProjectDirectory}">
-                  <arg value="status"/>
-                  <arg value="--porcelain"/>
+                  <arg value="status" />
+                  <arg value="--porcelain" />
                 </exec>
                 <condition property="revision" value="${gitRevision}">
                   <and>
-                    <equals arg1="${gitRevisionExit}" arg2="0"/>
-                    <not><equals arg1="${gitRevision}" arg2="" trim="true"/></not>
+                    <equals arg1="${gitRevisionExit}" arg2="0" />
+                    <not><equals arg1="${gitRevision}" arg2="" trim="true" /></not>
                   </and>
                 </condition>
-                <property name="revision" value="unknown"/>
+                <property name="revision" value="unknown" />
                 <condition property="revisionDirty" value="true">
                   <and>
-                    <equals arg1="${gitStatusExit}" arg2="0"/>
-                    <not><equals arg1="${gitStatus}" arg2="" trim="true"/></not>
+                    <equals arg1="${gitStatusExit}" arg2="0" />
+                    <not><equals arg1="${gitStatus}" arg2="" trim="true" /></not>
                   </and>
                 </condition>
-                <property name="revisionDirty" value="false"/>
+                <property name="revisionDirty" value="false" />
               </target>
             </configuration>
           </execution>

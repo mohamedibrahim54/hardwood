@@ -14,7 +14,7 @@
   <parent>
     <groupId>dev.hardwood</groupId>
     <artifactId>hardwood-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.CR1</version>
   </parent>
 
   <artifactId>hardwood-error-prone-checks</artifactId>
@@ -27,7 +27,7 @@
     <!-- javac rejects the release flag combined with add-exports on system modules. Clear the
          parent's maven.compiler.release and fall back to source/target so the jdk.compiler
          exports required by Error Prone's javac AST imports compile. -->
-    <maven.compiler.release/>
+    <maven.compiler.release />
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
