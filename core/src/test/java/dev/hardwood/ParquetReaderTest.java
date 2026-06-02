@@ -231,6 +231,47 @@ class ParquetReaderTest {
     }
 
     @Test
+    void testBatchSizeRejectsNonPositive() throws Exception {
+        Path filePath = Paths.get("src/test/resources/filter_pushdown_int.parquet");
+
+        try (Hardwood hardwood = Hardwood.create();
+             ParquetFileReader parquet = hardwood.open(InputFile.of(filePath))) {
+
+            assertThatThrownBy(() -> parquet.buildColumnReader("id").batchSize(0))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("batchSize must be positive");
+            assertThatThrownBy(() -> parquet.buildColumnReader("id").batchSize(-1))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("batchSize must be positive");
+        }
+    }
+
+    @Test
+    void testSmallBatchSizeNestedColumn() throws Exception {
+        // `scores` is a repeated (list) column, exercising the nested worker's
+        // batch-size handling, where a record spans a variable number of leaf values.
+        Path filePath = Paths.get("src/test/resources/filter_pushdown_list.parquet");
+
+        try (Hardwood hardwood = Hardwood.create();
+             ParquetFileReader parquet = hardwood.open(InputFile.of(filePath));
+             ColumnReader reader = parquet.buildColumnReader("scores.list.element")
+                     .batchSize(2)
+                     .build()) {
+
+            int totalRows = 0;
+            int batches = 0;
+            while (reader.nextBatch()) {
+                int count = reader.getRecordCount();
+                assertThat(count).isLessThanOrEqualTo(2);
+                totalRows += count;
+                batches++;
+            }
+            assertThat(totalRows).isEqualTo(9);
+            assertThat(batches).isEqualTo(5); // ceil(9 / 2)
+        }
+    }
+
+    @Test
     void testColumnReaderByIndex() throws Exception {
         Path parquetFile = Paths.get("src/test/resources/plain_uncompressed.parquet");
 

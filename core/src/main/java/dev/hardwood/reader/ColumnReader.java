@@ -61,7 +61,9 @@ import dev.hardwood.schema.ProjectedSchema;
 @Experimental
 public class ColumnReader implements AutoCloseable {
 
-    static final int DEFAULT_BATCH_SIZE = 262_144;
+    /// The default maximum number of records returned per batch when no batch
+    /// size is configured via `batchSize(int)` on the reader builders.
+    public static final int DEFAULT_BATCH_SIZE = 262_144;
 
     private final ColumnSchema column;
     private final boolean nested;

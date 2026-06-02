@@ -187,8 +187,9 @@ These items should ideally be caught by linting / checkstyle, not manual review.
 - **How:** Read the diff for `dev\.hardwood\.\S+\.\S+\(` patterns mid-method.
 
 ### F4. DRY within the same class/package
-- **Rule:** Repeated logic gets a private helper. Repeated *classes* (e.g. N near-identical matcher classes) need a justification before merging — generally codegen or a shared helper beats hand-duplication, even when "JIT specialization" is the stated reason.
-- **Why:** Maintenance multiplier. Today's 28 hand-duplicated matchers become tomorrow's 56 vector-API + scalar matchers.
+- **Rule:** *Substantial* repeated logic gets a private helper. Repeated *classes* (e.g. N near-identical matcher classes) need a justification before merging — generally codegen or a shared helper beats hand-duplication, even when "JIT specialization" is the stated reason.
+- **Floor — do NOT flag below this.** A short guard or boilerplate fragment (a 1–3 line argument-validation check, a null-check, a trivial throw) duplicated across **2** call sites is *fine* — extracting a helper for it costs more readability than it saves. The maintainer has explicitly called this out as noise. Flag duplication only when **either** the repeated block is non-trivial (real branching/computation, not a one-line guard) **or** it appears at **3+** sites. When in doubt below this floor, drop the finding — don't even demote it to a nit.
+- **Why:** Maintenance multiplier. Today's 28 hand-duplicated matchers become tomorrow's 56 vector-API + scalar matchers. But a twice-duplicated `if (x <= 0) throw ...` is not a maintenance multiplier — it's the cheapest possible code to keep in sync.
 - **How:** When 3+ new files share >70% of their structure, flag it. Ask the author to A/B against a shared helper before locking in the pattern. **Note:** DRY at this scale is an implementation-semantics concern, not a style nit — promote it.
 
 ### F5. Base class restraint
