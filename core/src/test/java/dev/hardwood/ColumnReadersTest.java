@@ -128,6 +128,22 @@ class ColumnReadersTest {
     }
 
     @Test
+    void testBatchSizeRejectsNonPositive() throws Exception {
+        Path filePath = Paths.get("src/test/resources/filter_pushdown_int.parquet");
+
+        try (Hardwood hardwood = Hardwood.create();
+             ParquetFileReader parquet = hardwood.openAll(InputFile.ofPaths(List.of(filePath)))) {
+
+            assertThatThrownBy(() -> parquet.buildColumnReaders(ColumnProjection.columns("id", "value")).batchSize(0))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("batchSize must be positive");
+            assertThatThrownBy(() -> parquet.buildColumnReaders(ColumnProjection.columns("id", "value")).batchSize(-1))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("batchSize must be positive");
+        }
+    }
+
+    @Test
     void testUnknownColumnNameThrows() throws Exception {
         Path filePath = Paths.get("src/test/resources/plain_uncompressed.parquet");
 
