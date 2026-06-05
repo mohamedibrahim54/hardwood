@@ -13,6 +13,26 @@
 
 See [GitHub Releases](https://github.com/hardwood-hq/hardwood/releases) for downloads and more information.
 
+## 1.0.0.CR2 (unreleased)
+
+<!-- TODO at release: add the announcement blog post link here, as a follow-up commit (see CR1).  · [API changes](/api-changes/1.0.0.CR2/) -->
+
+Highlights of this release:
+
+- **Breaking:** `RowReaderBuilder.firstRow()` renamed to `skip()`, which now composes with a filter as a logical `OFFSET` — rows are skipped after the filter is applied
+- Configurable read batch size for `ColumnReader` / `ColumnReaders`, with the default batch size now part of the public API
+- TIMESTAMP accessors honor `isAdjustedToUTC`, with dedicated accessors for local (non-UTC) timestamps
+- Graceful, explicit failure when opening encrypted Parquet files
+- Stricter metadata validation: negative sizes, counts, and offsets are rejected, as are shredded Variant objects repeating a field across `typed_value` and `value`
+- NaN-safe row group and page pruning for `float` and `double` columns
+- Duplicate map keys resolve to the last value per the Parquet spec; `head()` with a filter caps matched rows rather than scanned rows
+- `S3Source` factory methods return `S3InputFile`; the parquet-java compatibility layer tracks parquet-java 1.17.1
+- API change reports are now published alongside the JavaDoc on the website
+
+See the [1.0.0.CR2 milestone](https://github.com/hardwood-hq/hardwood/milestone/4?closed=1) on GitHub for the full list of resolved issues.
+
+Thank you to all contributors to this release: [Fawzi Essam](https://github.com/iifawzi), [Gunnar Morling](https://github.com/gunnarmorling), [Mohamed Ibrahim Elsawy](https://github.com/mohamedibrahim54).
+
 ## 1.0.0.CR1 (2026-05-31)
 
 [Announcement blog post](https://www.morling.dev/blog/improved-column-reader-api-geospatial-support-hardwood-1-0-0-cr1-available/) · [API changes](/api-changes/1.0.0.CR1/)
